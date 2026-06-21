@@ -1,0 +1,244 @@
+// Personal Transformation Platform — data model (SQLite).
+// Arrays / nested structures are stored as JSON strings because SQLite has no
+// native array or enum support. Swap `provider` to "postgresql" for production.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  profile     Profile?
+  plan        TransformationPlan?
+  workoutLogs WorkoutLog[]
+  mealLogs    MealLog[]
+  sleepLogs   SleepLog[]
+  habits      Habit[]
+  tasks       Task[]
+  focus       FocusSession[]
+  weightLogs  WeightLog[]
+  goals       Goal[]
+  messages    CoachMessage[]
+}
+
+model Profile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  age            Int
+  gender         String
+  heightCm       Float
+  weightKg       Float
+  targetWeightKg Float
+  fitnessLevel   String // beginner | intermediate | advanced
+  lifestyleType  String // sedentary | active | busy
+  workSchedule   String // 9-5 | shift | flexible | student
+  sleepTime      String // "23:00"
+  wakeTime       String // "07:00"
+  foodPreference String // vegetarian | non-vegetarian | vegan
+  gymAvailable   Boolean @default(false)
+  activityLevel  String // sedentary | light | moderate | very | extra
+  fitnessGoals   String  @default("[]") // JSON string[]
+  careerGoals    String?
+  injuries       String?
+  medicalNotes   String?
+
+  // computed
+  bmr           Float?
+  tdee          Float?
+  calorieTarget Float?
+  proteinTarget Float?
+
+  programStartDate DateTime @default(now())
+  onboardingDone   Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TransformationPlan {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source    String   @default("rules") // rules | ai
+  summary   String?
+  createdAt DateTime @default(now())
+
+  days PlanDay[]
+}
+
+model PlanDay {
+  id        String             @id @default(cuid())
+  planId    String
+  plan      TransformationPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  dayNumber Int
+  phase     Int // 1 | 2 | 3
+  title     String
+  morning   String // morning routine text
+  workout   String // workout focus text
+  meals     String // JSON
+  tasks     String // JSON string[]
+  mindset   String
+  reflect   String // reflection prompt
+
+  @@unique([planId, dayNumber])
+}
+
+model Exercise {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  muscleGroup String
+  category    String // strength | cardio | mobility | recovery
+  level       String // beginner | intermediate | advanced
+  instructions String
+  defaultSets Int     @default(3)
+  defaultReps String  @default("10")
+  restSec     Int     @default(60)
+  media       String  @default("") // placeholder gif/video url
+
+  setLogs SetLog[]
+}
+
+model WorkoutLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @default(now())
+  name      String
+  notes     String?
+  completed Boolean  @default(true)
+
+  sets SetLog[]
+}
+
+model SetLog {
+  id           String     @id @default(cuid())
+  workoutLogId String
+  workoutLog   WorkoutLog @relation(fields: [workoutLogId], references: [id], onDelete: Cascade)
+  exerciseId   String?
+  exercise     Exercise?  @relation(fields: [exerciseId], references: [id])
+  exerciseName String
+  setNumber    Int
+  reps         Int
+  weightKg     Float      @default(0)
+  isPR         Boolean    @default(false)
+}
+
+model Meal {
+  id       String @id @default(cuid())
+  name     String @unique
+  type     String // breakfast | lunch | dinner | snack | pre-workout | post-workout
+  pref     String // vegetarian | non-vegetarian | vegan | any
+  calories Int
+  protein  Int
+  carbs    Int
+  fat      Int
+}
+
+model MealLog {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date     DateTime @default(now())
+  type     String
+  name     String
+  calories Int
+  protein  Int
+  carbs    Int
+  fat      Int
+}
+
+model SleepLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @default(now())
+  sleepTime String
+  wakeTime  String
+  hours     Float
+  quality   Int // 1-5
+  score     Int // 0-100
+  notes     String?
+}
+
+model Habit {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  icon      String   @default("check")
+  isCore    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  logs HabitLog[]
+}
+
+model HabitLog {
+  id      String   @id @default(cuid())
+  habitId String
+  habit   Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  date    DateTime @default(now())
+  done    Boolean  @default(true)
+
+  @@unique([habitId, date])
+}
+
+model Task {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  category  String    @default("general") // work | learning | career | general
+  done      Boolean   @default(false)
+  date      DateTime  @default(now())
+  createdAt DateTime  @default(now())
+}
+
+model FocusSession {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String   @default("Deep Work")
+  minutes   Int
+  date      DateTime @default(now())
+}
+
+model Goal {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  type      String   @default("career") // career | learning | fitness | life
+  target    String?
+  progress  Int      @default(0) // 0-100
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model WeightLog {
+  id     String   @id @default(cuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date   DateTime @default(now())
+  weightKg Float
+}
+
+model CoachMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String // user | assistant
+  content   String
+  createdAt DateTime @default(now())
+}

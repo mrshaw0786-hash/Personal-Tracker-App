@@ -10,6 +10,33 @@ This is a complete digital transformation platform — not a simple tracker.
 
 ---
 
+## ▶️ Preview it in your browser (no local setup)
+
+This is a full-stack app (server + auth + database), so it can't run on static
+GitHub Pages — but you can launch the **real, running app** straight from GitHub
+with **Codespaces**:
+
+**[➡️ Open in GitHub Codespaces](https://codespaces.new/mrshaw0786-hash/Personal-Tracker-App?quickstart=1)**
+
+What happens:
+
+1. Click the link above (or on the repo: **Code → Codespaces → Create codespace**).
+2. The container auto-installs dependencies, sets up the SQLite database, seeds
+   the exercise/meal libraries, and starts the app (≈1–2 min the first time).
+3. When port **3000** is forwarded, click **"Open in Browser"** on the
+   notification (or the **Ports** tab) to get your live preview URL, e.g.
+   `https://<your-codespace>-3000.app.github.dev`.
+4. Register an account → complete onboarding → explore your generated plan.
+
+> If the app doesn't come up automatically, open a terminal in the Codespace and
+> run `npm run dev`, then open the forwarded port 3000.
+
+> The Codespace runs without an `ANTHROPIC_API_KEY`, so AI uses the built-in
+> rule-based engine. Add a key (`export ANTHROPIC_API_KEY=...`, then restart
+> `npm run dev`) to preview the Claude-powered path.
+
+---
+
 ## ✨ Features
 
 - **Premium marketing landing page** — hero, problem statement, how-it-works,

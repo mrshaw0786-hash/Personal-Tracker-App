@@ -1,6 +1,8 @@
 {
-  "name": "Ascend (Next.js + Prisma)",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "name": "Ascend (Next.js + Postgres)",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "forwardPorts": [3000],
   "portsAttributes": {
     "3000": {
@@ -8,16 +10,11 @@
       "onAutoForward": "openPreview"
     }
   },
-  "containerEnv": {
-    "DATABASE_URL": "file:./dev.db",
-    "AUTH_SECRET": "codespaces-dev-secret-not-for-production-000000000000",
-    "NODE_ENV": "development"
-  },
   "customizations": {
     "vscode": {
       "extensions": ["Prisma.prisma", "dbaeumer.vscode-eslint"]
     }
   },
-  "postCreateCommand": "npm install && npx prisma generate && npx prisma migrate deploy && npm run seed",
+  "postCreateCommand": "npm install && npx prisma generate && npx prisma db push && npm run seed",
   "postAttachCommand": "nohup npm run dev > /tmp/ascend-dev.log 2>&1 & echo 'Ascend is starting on port 3000 — open the forwarded URL in a few seconds.'"
 }

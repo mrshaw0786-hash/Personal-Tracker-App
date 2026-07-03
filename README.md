@@ -10,61 +10,74 @@ This is a complete digital transformation platform — not a simple tracker.
 
 ---
 
-## ▶️ Preview it in your browser (no local setup)
+## ▶️ Get a live, shareable link (recommended)
 
-This is a full-stack app (server + auth + database), so it can't run on static
-GitHub Pages — but you can launch the **real, running app** straight from GitHub
-with **Codespaces**:
+This is a full-stack app (server + auth + Postgres database), so it can't run on
+static GitHub Pages. The easiest way to get a **permanent public URL** you can
+open like any website is to deploy to **Vercel** with a free **Neon Postgres**
+database. ~5 minutes, all in the browser:
+
+1. **Create the database (free).** Go to **[neon.tech](https://neon.tech)** →
+   sign in with GitHub → **Create project**. Copy the **connection string**
+   (use the *direct* connection, not the pooled one — it looks like
+   `postgresql://user:pass@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require`).
+
+2. **Import the repo to Vercel.** Go to **[vercel.com/new](https://vercel.com/new)**
+   → sign in with GitHub → **Import** `Personal-Tracker-App`.
+
+3. **Add two environment variables** (Vercel import screen → *Environment Variables*):
+   - `DATABASE_URL` = the Neon connection string from step 1
+   - `AUTH_SECRET` = any long random string (e.g. run `openssl rand -base64 32`,
+     or just paste 40+ random characters)
+
+4. **Click Deploy.** The build automatically creates the database tables and
+   seeds the exercise/meal libraries (`vercel-build` runs
+   `prisma db push` + seed). When it finishes you get a live URL like
+   `https://personal-tracker-app.vercel.app`.
+
+5. **Open the URL → Create account → complete onboarding → use the app.**
+
+> No `ANTHROPIC_API_KEY` needed — AI uses the built-in rule-based engine. Add
+> `ANTHROPIC_API_KEY` in Vercel → Settings → Environment Variables (and redeploy)
+> to switch on the Claude-powered coach.
+
+---
+
+## 💻 Or preview in GitHub Codespaces (dev, no accounts)
+
+Prefer a throwaway dev preview with zero external accounts? Launch a Codespace —
+it runs the app **and** a Postgres container for you:
 
 **[➡️ Open in GitHub Codespaces](https://codespaces.new/mrshaw0786-hash/Personal-Tracker-App?quickstart=1)**
 
-What happens:
+1. Click the link (or on the repo: **Code → Codespaces → Create codespace**).
+2. Wait ~2–3 min while it installs deps, starts Postgres, creates the schema,
+   seeds data, and boots the app.
+3. When port **3000** forwards, click **Open in Browser** (or the **Ports** tab →
+   globe icon on port 3000). If it doesn't auto-start, run `npm run dev` in the
+   terminal.
 
-1. Click the link above (or on the repo: **Code → Codespaces → Create codespace**).
-2. The container auto-installs dependencies, sets up the SQLite database, seeds
-   the exercise/meal libraries, and starts the app (≈1–2 min the first time).
-3. When port **3000** is forwarded, click **"Open in Browser"** on the
-   notification (or the **Ports** tab) to get your live preview URL, e.g.
-   `https://<your-codespace>-3000.app.github.dev`.
-4. Register an account → complete onboarding → explore your generated plan.
-
-> If the app doesn't come up automatically, open a terminal in the Codespace and
-> run `npm run dev`, then open the forwarded port 3000.
-
-> The Codespace runs without an `ANTHROPIC_API_KEY`, so AI uses the built-in
-> rule-based engine. Add a key (`export ANTHROPIC_API_KEY=...`, then restart
-> `npm run dev`) to preview the Claude-powered path.
+The Codespace link only works while the Codespace is running — use the Vercel
+option above for an always-on link.
 
 ---
 
 ## ✨ Features
 
-- **Premium marketing landing page** — hero, problem statement, how-it-works,
-  features, 3-phase roadmap, testimonials, pricing, FAQ, and CTA, with scroll
-  animations and a dark/light theme.
-- **Secure auth** — email/password accounts (Auth.js v5, hashed with bcrypt,
-  JWT sessions). All app routes are gated server-side.
-- **Guided onboarding** — a multi-step wizard collecting body stats, goals,
+- **Premium landing page** — hero, problem, how-it-works, features, 3-phase
+  roadmap, testimonials, pricing, FAQ, CTA, scroll animations, dark/light theme.
+- **Secure auth** — Auth.js v5 email/password (bcrypt, JWT); server-gated routes.
+- **Guided onboarding** — multi-step wizard capturing body stats, goals,
   schedule, food preference, gym access, injuries, and more.
-- **AI plan generation** — generates a personalized 45-day plan (daily routine,
-  workouts, meals, tasks, mindset cues, reflections) using **Claude
-  (`claude-opus-4-8`)**, with a **deterministic rule-based engine fallback** so
-  the app works fully with no API key.
-- **AI Coach** — a streaming chat coach that knows your profile and progress,
-  diagnoses missed workouts, and adjusts your plan.
-- **Main dashboard** — today's plan, habit checklist, animated progress rings,
-  weight chart, macro meters, and streaks.
-- **45-Day Program** — phase tabs, an interactive day grid, and full day detail.
-- **Fitness** — workout logger with set/rep/weight tracking, automatic PR
-  detection, recent sessions, and a filterable exercise library.
-- **Nutrition** — calorie & macro targets (Mifflin-St Jeor BMR → TDEE →
-  goal-adjusted), meal logging from a library or custom, and the day's plan.
-- **Sleep** — sleep logging with a computed sleep score, trend chart, and an
-  improvement plan.
-- **Productivity** — daily planner, deep-work Pomodoro timer (logs focus hours),
-  and goal management with progress sliders.
-- **Habits** — a weekly habit grid (tap any day), streaks, completion %, and a
-  weekly report.
+- **AI plan generation** — a personalized 45-day plan (routine, workouts, meals,
+  tasks, mindset cues, reflections) via **Claude (`claude-opus-4-8`)** with a
+  **deterministic rule-based fallback** so it works with no API key.
+- **AI Coach** — streaming chat coach that knows your profile & progress.
+- **Dashboard** — today's plan, habit checklist, progress rings, weight chart,
+  macro meters, streaks.
+- **45-Day Program**, **Fitness** (logging + PRs + library), **Nutrition**
+  (macros + meal logging), **Sleep** (score + trend), **Productivity** (planner +
+  deep-work timer + goals), **Habits** (weekly grid + streaks + report).
 
 ---
 
@@ -73,60 +86,41 @@ What happens:
 | Layer | Choice |
 |---|---|
 | Framework | Next.js 16 (App Router) + React 19 + TypeScript |
-| Styling | Tailwind CSS v4 (CSS-variable design tokens, class-based dark mode) |
-| Animation | Framer Motion |
-| Charts | Recharts |
-| Icons | lucide-react |
+| Styling | Tailwind CSS v4 (design tokens, class-based dark mode) |
+| Animation | Framer Motion · Charts: Recharts · Icons: lucide-react |
 | Auth | Auth.js v5 (Credentials, JWT) + bcrypt |
-| Database | Prisma ORM + SQLite (swappable to Postgres) |
+| Database | Prisma ORM + PostgreSQL |
 | AI | Anthropic SDK (`claude-opus-4-8`) with a rule-based fallback |
 | Validation | Zod |
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Local Development
 
-### 1. Install
+Requires Node 22+ and a Postgres database (a free Neon DB works, or run Postgres
+locally / via Docker).
 
     npm install
+    cp .env.example .env         # then set DATABASE_URL + AUTH_SECRET
+    npx prisma db push           # create tables
+    npm run seed                 # seed exercise & meal libraries
+    npm run dev                  # http://localhost:3000
 
-### 2. Environment
+`.env` example:
 
-A `.env` is included for local development. Copy `.env.example` to customize:
-
-    DATABASE_URL="file:./dev.db"
-    AUTH_SECRET="generate-with: openssl rand -base64 32"
-    NEXTAUTH_URL="http://localhost:3000"
-    # ANTHROPIC_API_KEY="sk-ant-..."   # optional — enables Claude-powered AI
-    # AI_MODEL="claude-opus-4-8"       # optional override
-
-> **No `ANTHROPIC_API_KEY`?** No problem. The app uses a deterministic
-> rule-based engine for plan generation and coaching. Add a key any time to
-> upgrade to Claude — if the key is missing, invalid, or unreachable, the app
-> automatically and gracefully falls back.
-
-### 3. Database
-
-    npx prisma migrate dev   # create the SQLite DB + apply migrations
-    npm run seed             # seed the exercise & meal libraries
-
-### 4. Run
-
-    npm run dev              # http://localhost:3000
-
-Register an account → complete onboarding → your 45-day plan is generated →
-explore the dashboard and modules.
+    DATABASE_URL="postgresql://user:password@host:5432/dbname?sslmode=require"
+    AUTH_SECRET="generate with: openssl rand -base64 32"
+    # ANTHROPIC_API_KEY="sk-ant-..."   # optional — enables Claude
 
 ---
 
-## 🗄️ Database Schema (Prisma)
+## 🗄️ Database Schema (Prisma / PostgreSQL)
 
-Key models: `User`, `Profile`, `TransformationPlan` + `PlanDay` (45 rows),
+Models: `User`, `Profile`, `TransformationPlan` + `PlanDay` (45 rows),
 `Exercise`, `WorkoutLog` + `SetLog`, `Meal` + `MealLog`, `SleepLog`,
-`Habit` + `HabitLog`, `Task`, `FocusSession`, `Goal`, `WeightLog`, and
-`CoachMessage`. Arrays/nested data are stored as JSON strings (SQLite has no
-native array/enum support); switch the datasource `provider` to `postgresql`
-for production.
+`Habit` + `HabitLog`, `Task`, `FocusSession`, `Goal`, `WeightLog`,
+`CoachMessage`. Arrays/nested data are stored as JSON strings (no
+dialect-specific features), so the schema is fully portable.
 
 ---
 
@@ -139,38 +133,24 @@ for production.
       rules-engine.ts    Deterministic plan templates + context-aware coaching
     lib/nutrition/calc.ts  Macro math (single source of truth for both paths)
 
-The AI integration follows current Anthropic best practices: model
-`claude-opus-4-8`, `output_config.format` (JSON schema) for structured plan
-generation, `messages.stream` for the coach, and no deprecated
-`temperature`/`budget_tokens` parameters. All Claude calls run server-side.
+Follows current Anthropic guidance: model `claude-opus-4-8`,
+`output_config.format` (JSON schema) for structured generation,
+`messages.stream` for the coach, no deprecated `temperature`/`budget_tokens`.
+All Claude calls run server-side.
 
 ---
 
-## 🧪 Testing & Verification
+## 🧪 Verification
 
-    npm run build   # type-checks all routes
-    npm run lint    # eslint (clean)
-
-End-to-end (manual): register → onboarding → plan generation → dashboard → log a
-workout/meal/sleep/habit → open the AI coach. The fallback path was verified
-end-to-end (plan generation produces 45 days, logging updates the dashboard, and
-the coach returns context-aware replies). With a valid `ANTHROPIC_API_KEY` and
-network egress to `api.anthropic.com`, the same flows run through Claude.
-
----
-
-## 📦 Deployment
-
-1. Set a strong `AUTH_SECRET` (`openssl rand -base64 32`) and `NEXTAUTH_URL`.
-2. For production, point `DATABASE_URL` at Postgres and change the Prisma
-   datasource `provider` to `postgresql`, then `prisma migrate deploy`.
-3. (Optional) Set `ANTHROPIC_API_KEY` to enable Claude-powered AI.
-4. Deploy to any Node host (e.g. Vercel): `npm run build` then `npm start`.
+`npm run build` and `npm run lint` pass. The full flow (register → onboarding →
+45-day plan generation → dashboard → logging workouts/meals/sleep/habits →
+AI coach) was verified end-to-end; schema push, seeding, and the production
+build were validated against PostgreSQL.
 
 ---
 
 ## 🛣️ Deferred / Next Steps
 
 Built at "full breadth, MVP depth". Intentionally deferred: payment processing,
-email verification, Lottie assets, real exercise videos/GIFs (placeholders used),
-and push notifications.
+email verification, Lottie assets, real exercise videos/GIFs (placeholders), and
+push notifications.

@@ -1,13 +1,13 @@
-// Personal Transformation Platform — data model (SQLite).
-// Arrays / nested structures are stored as JSON strings because SQLite has no
-// native array or enum support. Swap `provider` to "postgresql" for production.
+// Personal Transformation Platform — data model (PostgreSQL).
+// Arrays / nested structures are stored as JSON strings for portability and
+// simplicity; the schema uses no dialect-specific features.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

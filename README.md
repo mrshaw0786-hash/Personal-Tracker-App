@@ -17,13 +17,19 @@ static GitHub Pages. The easiest way to get a **permanent public URL** you can
 open like any website is to deploy to **Vercel** with a free **Neon Postgres**
 database. ~5 minutes, all in the browser:
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmrshaw0786-hash%2FPersonal-Tracker-App&env=DATABASE_URL%2CAUTH_SECRET&envDescription=Neon%20Postgres%20connection%20string%20and%20a%20random%20AUTH_SECRET&envLink=https%3A%2F%2Fgithub.com%2Fmrshaw0786-hash%2FPersonal-Tracker-App%23%EF%B8%8F-get-a-live-shareable-link-recommended&project-name=ascend&repository-name=ascend)
+
+Click the button above — it clones the repo into your Vercel account and prompts
+for the two environment variables from steps 1 and 3 below. Then just paste your
+Neon URL + a random secret and deploy.
+
 1. **Create the database (free).** Go to **[neon.tech](https://neon.tech)** →
    sign in with GitHub → **Create project**. Copy the **connection string**
    (use the *direct* connection, not the pooled one — it looks like
    `postgresql://user:pass@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require`).
 
-2. **Import the repo to Vercel.** Go to **[vercel.com/new](https://vercel.com/new)**
-   → sign in with GitHub → **Import** `Personal-Tracker-App`.
+2. **Click the "Deploy with Vercel" button above** (or go to
+   **[vercel.com/new](https://vercel.com/new)** and import `Personal-Tracker-App`).
 
 3. **Add two environment variables** (Vercel import screen → *Environment Variables*):
    - `DATABASE_URL` = the Neon connection string from step 1
